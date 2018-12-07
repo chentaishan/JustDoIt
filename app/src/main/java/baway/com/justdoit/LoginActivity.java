@@ -1,0 +1,70 @@
+package baway.com.justdoit;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
+
+public class LoginActivity extends AppCompatActivity {
+
+    private EditText usernameEditText;
+    private EditText passwordEditText;
+
+    private static final String TAG = "LoginActivity";
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_activity);
+        usernameEditText = (EditText) findViewById(R.id.username);
+        passwordEditText = (EditText) findViewById(R.id.password);
+
+    }
+
+    public void register(View view){
+        final String currentUsername = usernameEditText.getText().toString().trim();
+        final String currentPassword = passwordEditText.getText().toString().trim();
+
+            new Thread(){
+                public void run(){
+                    try {
+                        EMClient.getInstance().createAccount(currentUsername, currentPassword);
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "register: " );
+                    }
+                }
+            }.start();
+
+    }
+    public void login(View view){
+        String currentUsername = usernameEditText.getText().toString().trim();
+        String currentPassword = passwordEditText.getText().toString().trim();
+
+        EMClient.getInstance().login(currentUsername, currentPassword, new EMCallBack() {
+
+            @Override
+            public void onSuccess() {
+                Log.e(TAG, "onSuccess: " );
+            }
+
+            @Override
+            public void onError(int i, String s) {
+
+                Log.e(TAG, "onError: s="+s );
+            }
+
+            @Override
+            public void onProgress(int i, String s) {
+                Log.e(TAG, "onProgress: " );
+            }
+        });
+
+
+
+        }
+}
