@@ -3,44 +3,42 @@ package baway.com.justdoit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.widget.EaseConversationList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.hyphenate.easeui.EaseConstant.CHATTYPE_GROUP;
+import baway.com.justdoit.fragment.ContactListFragment;
+import baway.com.justdoit.fragment.ConversationListFragment;
+import baway.com.justdoit.fragment.SettingFragment;
 
-public class ConversationListActivity extends Activity {
-    EaseConversationList easeConversationList;
+public class MainActivity extends FragmentActivity {
+    private static final String TAG = "MainActivity";
+    private ConversationListFragment conversationListFragment;
+    private ContactListFragment contactListFragment;
+    private Fragment[] fragments;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.conversation_activity);
+        setContentView(R.layout.main_actvity);
+        //加载所有会话
+        EMClient.getInstance().chatManager().loadAllConversations();
 
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        List<EMConversation> conversationList = new ArrayList<>();
-        for (Map.Entry<String, EMConversation> entry : conversations.entrySet()) {
+        conversationListFragment = new ConversationListFragment();
+        contactListFragment = new ContactListFragment();
+        SettingFragment settingFragment = new SettingFragment();
+        fragments = new Fragment[] { conversationListFragment, contactListFragment, settingFragment};
 
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-
-            conversationList.add(entry.getValue());
-        }
-//会话列表控件
-        easeConversationList = (EaseConversationList) findViewById(R.id.list);
-//初始化，参数为会话列表集合
-        easeConversationList.init(conversationList);
-//刷新列表
-        easeConversationList.refresh();
+        this.getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, conversationListFragment)
+                .add(R.id.fragment_container, contactListFragment).hide(contactListFragment).show(conversationListFragment)
+                .commit();
 
 
 
@@ -50,6 +48,8 @@ public class ConversationListActivity extends Activity {
             public void onMessageReceived(List<EMMessage> messages) {
                 //收到消息
 
+                Log.e(TAG, "onMessageReceived: "+ messages.size());
+                conversationListFragment.refreshLayout();
 
             }
 
@@ -78,15 +78,7 @@ public class ConversationListActivity extends Activity {
             }
         };
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
-
     }
 
-    public void sendMsg(View view){
-//创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
-        EMMessage message = EMMessage.createTxtSendMessage("hhh", "222");
-
-//发送消息
-        EMClient.getInstance().chatManager().sendMessage(message);
-    }
 
 }

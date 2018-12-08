@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         // 创建账号
                         EMClient.getInstance().createAccount(currentUsername, currentPassword);
-                        startActivity(new Intent(LoginActivity.this,ConversationListActivity.class));
+                        startActivity(new Intent(LoginActivity.this,ConversationActivity.class));
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                         Log.e(TAG, "register: " );
@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 Log.e(TAG, "onSuccess: " );
-                startActivity(new Intent(LoginActivity.this,ConversationListActivity.class));
+                startActivity(new Intent(LoginActivity.this,MainActivity.class));
             }
 
             @Override

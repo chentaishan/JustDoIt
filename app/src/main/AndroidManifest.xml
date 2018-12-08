@@ -19,7 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ConversationListActivity"/>
+        <activity android:name=".ConversationActivity"/>
+        <activity android:name=".MainActivity"/>
+        <activity android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"/>
 
 
 
