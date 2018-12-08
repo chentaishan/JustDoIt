@@ -158,9 +158,6 @@ public class ConversationActivity extends Activity {
                         sendLocationMessage(latitude, longitude, "北京海淀区 上地七街");
                     break;
                 case 1:  //对应ITEM_SHAKE
-                    //imagePath为图片本地路径，false为不发送原图（默认超过100k的图片会压缩后发给对方），需要发送原图传true
-//                    EMMessage emMessage = EMMessage.createImageSendMessage(imagePath, false, userName);
-//                    EMClient.getInstance().chatManager().sendMessage(emMessage);
 
                     sendTextMessage("抖一抖");
                     break;
@@ -173,21 +170,4 @@ public class ConversationActivity extends Activity {
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_MAP) { // location
-
-//            40.0376283850,116.3187221243
-            double latitude = 40.0376283850;
-            double longitude = 116.3187221243;
-            String locationAddress = data.getStringExtra("address");
-            if (locationAddress != null && !locationAddress.equals("")) {
-                sendLocationMessage(latitude, longitude, locationAddress);
-            } else {
-                Toast.makeText(ConversationActivity.this, com.hyphenate.easeui.R.string.unable_to_get_loaction, Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
 }
