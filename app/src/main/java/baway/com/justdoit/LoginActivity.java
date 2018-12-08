@@ -1,5 +1,6 @@
 package baway.com.justdoit;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,14 +26,20 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 注册点击
+     * @param view
+     */
     public void register(View view){
         final String currentUsername = usernameEditText.getText().toString().trim();
         final String currentPassword = passwordEditText.getText().toString().trim();
-
+            // 注册放到子线程里
             new Thread(){
                 public void run(){
                     try {
+                        // 创建账号
                         EMClient.getInstance().createAccount(currentUsername, currentPassword);
+                        startActivity(new Intent(LoginActivity.this,ConversationListActivity.class));
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                         Log.e(TAG, "register: " );
@@ -41,6 +48,11 @@ public class LoginActivity extends AppCompatActivity {
             }.start();
 
     }
+
+    /**
+     * 登录
+     * @param view
+     */
     public void login(View view){
         String currentUsername = usernameEditText.getText().toString().trim();
         String currentPassword = passwordEditText.getText().toString().trim();
@@ -50,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 Log.e(TAG, "onSuccess: " );
+                startActivity(new Intent(LoginActivity.this,ConversationListActivity.class));
             }
 
             @Override

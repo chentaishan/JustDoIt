@@ -15,6 +15,7 @@
         android:paddingLeft="10dip"
         android:singleLine="true"
         android:textColor="#000"
+        android:text="111"
         android:textSize="18sp" />
 
 
@@ -24,8 +25,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:hint="@string/password"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
+        android:text="111"
         android:paddingLeft="10dip"
         android:singleLine="true"
         android:textSize="18sp" />
