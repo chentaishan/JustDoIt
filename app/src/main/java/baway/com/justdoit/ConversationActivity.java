@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
@@ -130,22 +131,34 @@ public class ConversationActivity extends Activity {
     private void sendVoiceMessage(String voiceFilePath, int voiceTimeLength) {
         //filePath为语音文件路径，length为录音时间(秒)
         EMMessage message = EMMessage.createVoiceSendMessage(voiceFilePath, voiceTimeLength, userName);
-//如果是群聊，设置chattype，默认是单聊
-//        if (chatType == CHATTYPE_GROUP)
-//            message.setChatType(EMMessage.ChatType.GroupChat);
+        message.setMessageStatusCallback(emCallBack);
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
     private void sendTextMessage(String content) {
         //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
         EMMessage message = EMMessage.createTxtSendMessage(content, userName);
-//如果是群聊，设置chattype，默认是单聊
-//        if (chatType == CHATTYPE_GROUP)
-//            message.setChatType(EMMessage.ChatType.GroupChat);
+        message.setMessageStatusCallback(emCallBack);
 //发送消息
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
+    EMCallBack emCallBack = new EMCallBack() {
+        @Override
+        public void onSuccess() {
+            messageList.refresh();
+        }
+
+        @Override
+        public void onError(int i, String s) {
+
+        }
+
+        @Override
+        public void onProgress(int i, String s) {
+
+        }
+    };
     EaseChatExtendMenu.EaseChatExtendMenuItemClickListener easeChatExtendMenuItemClickListener = new EaseChatExtendMenu.EaseChatExtendMenuItemClickListener() {
         @Override
         public void onClick(int itemId, View view) {
@@ -167,6 +180,7 @@ public class ConversationActivity extends Activity {
     public void sendLocationMessage(double latitude,double longitude,String locationAddress){
         //latitude为纬度，longitude为经度，locationAddress为具体位置内容
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, userName);
+        message.setMessageStatusCallback(emCallBack);
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
