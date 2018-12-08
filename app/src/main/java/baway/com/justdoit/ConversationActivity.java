@@ -1,41 +1,29 @@
 package baway.com.justdoit;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
-import com.hyphenate.easeui.widget.EaseConversationList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
-import com.hyphenate.easeui.widget.presenter.EaseChatLocationPresenter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 public class ConversationActivity extends Activity {
     EaseChatMessageList messageList;
     String userName;
-    SwipeRefreshLayout swipeRefreshLayout;
     private EaseChatInputMenu inputMenu;
     private EaseVoiceRecorderView voiceRecorderView;
     private int ITEM_LOCATION=0;
-    private int REQUEST_CODE_MAP=99;
     private int ITEM_SHAKE=1;
 
     @Override
@@ -50,13 +38,13 @@ public class ConversationActivity extends Activity {
         inputMenu = (EaseChatInputMenu) findViewById(R.id.input_menu);
         voiceRecorderView = (EaseVoiceRecorderView) findViewById(com.hyphenate.easeui.R.id.voice_recorder);
 
-//注册底部菜单扩展栏item
-//传入item对应的文字，图片及点击事件监听，extendMenuItemClickListener实现EaseChatExtendMenuItemClickListener
+        //注册底部菜单扩展栏item
+        //传入item对应的文字，图片及点击事件监听，extendMenuItemClickListener实现EaseChatExtendMenuItemClickListener
         inputMenu.registerExtendMenuItem(R.string.attach_location, R.drawable.ease_location_msg, ITEM_LOCATION, easeChatExtendMenuItemClickListener);
         inputMenu.registerExtendMenuItem("抖一抖", R.drawable.shake_icon, ITEM_SHAKE, easeChatExtendMenuItemClickListener);
         //初始化，此操作需放在registerExtendMenuItem后
         inputMenu.init();
-//设置相关事件监听
+        //设置相关事件监听
         inputMenu.setChatInputMenuListener(new EaseChatInputMenu.ChatInputMenuListener() {
 
             @Override
@@ -87,9 +75,9 @@ public class ConversationActivity extends Activity {
                 });
             }
         });
-//初始化messagelist
+        //初始化messagelist
         messageList.init(userName, EMMessage.ChatType.Chat.ordinal(), null);
-//设置item里的控件的点击事件
+        //设置item里的控件的点击事件
         messageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
             @Override
             public void onUserAvatarClick(String username) {
@@ -120,9 +108,9 @@ public class ConversationActivity extends Activity {
                 return false;
             }
         });
-//获取下拉刷新控件
-        swipeRefreshLayout = messageList.getSwipeRefreshLayout();
-//刷新消息列表
+        //获取下拉刷新控件
+//        swipeRefreshLayout = messageList.getSwipeRefreshLayout();
+        //刷新消息列表
         messageList.refresh();
 //        messageList.refreshSeekTo(position);
         messageList.refreshSelectLast();
@@ -139,7 +127,7 @@ public class ConversationActivity extends Activity {
         //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
         EMMessage message = EMMessage.createTxtSendMessage(content, userName);
         message.setMessageStatusCallback(emCallBack);
-//发送消息
+        //发送消息
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
@@ -165,7 +153,6 @@ public class ConversationActivity extends Activity {
 
             switch (itemId) {
                 case 0:  //对应ITEM_LOCATION
-//                    startActivityForResult(new Intent(ConversationActivity.this, EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
                     double latitude = 40.0376283850;
                     double longitude = 116.3187221243;
                         sendLocationMessage(latitude, longitude, "北京海淀区 上地七街");

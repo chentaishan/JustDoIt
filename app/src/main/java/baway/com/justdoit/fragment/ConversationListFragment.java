@@ -46,13 +46,11 @@ public class ConversationListFragment extends Fragment implements AdapterView.On
 
             conversationList.add(entry.getValue());
         }
-//会话列表控件
+        //会话列表控件
         easeConversationList = (EaseConversationList) root.findViewById(R.id.list);
         easeConversationList.setOnItemClickListener(this);
-//初始化，参数为会话列表集合
+        //初始化，参数为会话列表集合
         easeConversationList.init(conversationList);
-//刷新列表
-//        easeConversationList.refresh();
 
         return root;
 
@@ -67,7 +65,10 @@ public class ConversationListFragment extends Fragment implements AdapterView.On
         startActivity(intent);
     }
 
-    public void refreshLayout(){
+    /**
+     * 刷新数据
+     */
+    public void refreshLayout() {
 
         conversationList.clear();
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
