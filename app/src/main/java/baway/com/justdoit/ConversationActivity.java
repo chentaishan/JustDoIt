@@ -1,6 +1,7 @@
 package baway.com.justdoit;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -131,6 +132,13 @@ public class ConversationActivity extends Activity {
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
+    private void sendPicMessage(String imagePath){
+        //imagePath为图片本地路径，false为不发送原图（默认超过100k的图片会压缩后发给对方），需要发送原图传true
+        EMMessage  emMessage = EMMessage.createImageSendMessage(imagePath, false, userName);
+
+        EMClient.getInstance().chatManager().sendMessage(emMessage);
+    }
+
     EMCallBack emCallBack = new EMCallBack() {
         @Override
         public void onSuccess() {
@@ -171,4 +179,18 @@ public class ConversationActivity extends Activity {
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 点击选择图片，会跳转一个图片选择器的界面，选中图片后，会跳转回来，并且返回图片路径。
+
+        String imgPath = data.getStringExtra("imgPath");
+        //sdcard/nom/
+        if (imgPath!=null){
+            sendPicMessage(imgPath);
+        }
+//        startActivityForResult();
+
+    }
 }

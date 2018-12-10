@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess() {
                 Log.e(TAG, "onSuccess: " );
                 startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                finish();
             }
 
             @Override
@@ -80,4 +81,11 @@ public class LoginActivity extends AppCompatActivity {
 
 
         }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EMClient.getInstance().logout(true);
+
+    }
 }
