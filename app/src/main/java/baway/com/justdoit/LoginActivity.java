@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess() {
                 Log.e(TAG, "onSuccess: " );
                 startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                finish();
+//                finish();
             }
 
             @Override

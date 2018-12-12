@@ -9,7 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-
+import android.widget.EditText;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.easeui.domain.EaseEmojicon;
@@ -26,16 +27,28 @@ import baway.com.justdoit.R;
 
 public class ConversationListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-    EaseConversationList easeConversationList;
-    List<EMConversation> conversationList = new ArrayList<>();
-    EaseChatInputMenu inputMenu;
+    private EaseConversationList easeConversationList;
+    private List<EMConversation> conversationList = new ArrayList<>();
+    private EaseChatInputMenu inputMenu;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.conversation_list_fragment, null);
-
+       final EditText inputEdit =  root.findViewById(R.id.input);
+       final EditText sendWhoEdit =  root.findViewById(R.id.send_who);
+        root.findViewById(R.id.send_msg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EMMessage message = EMMessage.createTxtSendMessage(inputEdit.getText().toString(), sendWhoEdit.getText().toString());
+//如果是群聊，设置chattype，默认是单聊
+//                if (chatType == CHATTYPE_GROUP)
+//                    message.setChatType(ChatType.GroupChat);
+//发送消息
+                EMClient.getInstance().chatManager().sendMessage(message);
+            }
+        });
 
         //获取所有会话列表
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
