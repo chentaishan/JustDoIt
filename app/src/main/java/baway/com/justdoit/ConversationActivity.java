@@ -3,24 +3,32 @@ package baway.com.justdoit;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.domain.EaseEmojicon;
+import com.hyphenate.easeui.model.EaseCompat;
+import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
+import com.hyphenate.util.PathUtil;
+
+import java.io.File;
 
 import static baway.com.justdoit.Utils.Contants.ITEM_CAMERA;
 import static baway.com.justdoit.Utils.Contants.ITEM_FILE;
 import static baway.com.justdoit.Utils.Contants.ITEM_LOCATION;
 import static baway.com.justdoit.Utils.Contants.ITEM_PICTURE;
 import static baway.com.justdoit.Utils.Contants.ITEM_SHAKE;
+import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_CAMERA;
 
 /**
  * 聊天页面
@@ -220,4 +228,22 @@ public class ConversationActivity extends Activity {
 //        startActivityForResult();
 
     }
+    /**
+     * capture new image
+     */
+    protected void selectPicFromCamera() {
+        if (!EaseCommonUtils.isSdcardExist()) {
+            Toast.makeText(this, com.hyphenate.easeui.R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+       File cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
+                + System.currentTimeMillis() + ".jpg");
+        //noinspection ResultOfMethodCallIgnored
+        cameraFile.getParentFile().mkdirs();
+        startActivityForResult(
+                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(this, cameraFile)),
+                REQUEST_CODE_CAMERA);
+    }
+
 }

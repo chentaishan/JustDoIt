@@ -39,10 +39,7 @@ public class ConversationListFragment extends Fragment implements AdapterView.On
             @Override
             public void onClick(View v) {
                 EMMessage message = EMMessage.createTxtSendMessage(inputEdit.getText().toString(), sendWhoEdit.getText().toString());
-//如果是群聊，设置chattype，默认是单聊
-//                if (chatType == CHATTYPE_GROUP)
-//                    message.setChatType(ChatType.GroupChat);
-//发送消息
+
                 EMClient.getInstance().chatManager().sendMessage(message);
             }
         });

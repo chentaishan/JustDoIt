@@ -1,7 +1,10 @@
 package baway.com.justdoit.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMGroupOptions;
 import com.hyphenate.chat.EMClient;
@@ -25,6 +31,8 @@ import baway.com.justdoit.ConversationActivity;
 import baway.com.justdoit.GroupAdapter;
 import baway.com.justdoit.R;
 
+import static baway.com.justdoit.Utils.Contants.CREATE_GROUP;
+import static baway.com.justdoit.Utils.Contants.JOIN_GROUP;
 import static com.hyphenate.easeui.EaseConstant.CHATTYPE_GROUP;
 
 public class ContactListFragment extends Fragment implements View.OnClickListener {
@@ -32,16 +40,41 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
     RelativeLayout creteGroup;
     RelativeLayout joinGroup;
     ListView listView;
-    private String groupId;
-    private String TAG="ContactListFragment";
-//    protected List<EMGroup> grouplist;
     private ListView groupListView;
+    private TextView createGroupText;
+
+    private  String TAG = "ContactListFragment";
+    private  String groupId="";
+    @SuppressLint("HandlerLeak")
+     Handler handler = new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case CREATE_GROUP:
+                    EMGroup emGroup = (EMGroup) msg.obj;
+                    if (emGroup!=null){
+                        groupId =     emGroup.getGroupId();
+                    }
+                    createGroupText.setText("创建群id: "+groupId);
+
+                    Toast.makeText(getActivity(), "创建群聊==成功=id: ="+groupId, Toast.LENGTH_LONG).show();
+
+                    break;
+                case JOIN_GROUP:
+                    Log.e(TAG, "joinGroup: " );
+                    Toast.makeText(getActivity(), "加入群聊==成功=id: ="+groupId, Toast.LENGTH_LONG).show();
+
+                    break;
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.contact_fragment,null);
 
 
+        createGroupText = rootView.findViewById(R.id.create_group_text);
         creteGroup = rootView.findViewById(R.id.create_group);
         joinGroup = rootView.findViewById(R.id.join_group);
         listView = rootView.findViewById(R.id.list);
@@ -76,23 +109,6 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
         switch (v.getId()){
             case R.id.create_group:  //创建群聊
 
-                /**
-                 * 创建群组
-                 * @param groupName 群组名称
-                 * @param desc 群组简介
-                 * @param allMembers 群组初始成员，如果只有自己传空数组即可
-                 * @param reason 邀请成员加入的reason
-                 * @param option 群组类型选项，可以设置群组最大用户数(默认200)及群组类型@see {@link EMGroupStyle}
-                 *               option.inviteNeedConfirm表示邀请对方进群是否需要对方同意，默认是需要用户同意才能加群的。
-                 *               option.extField创建群时可以为群组设定扩展字段，方便个性化订制。
-                 * @return 创建好的group
-                 * @throws HyphenateException
-                 */
-//                if ( EMClient.getInstance().isLoggedInBefore()){
-                    Log.e(TAG, "create_group: "+EMClient.getInstance().isLoggedInBefore() );
-//                }
-
-
                 new Thread(){
                     public  void run(){
                         try {
@@ -100,11 +116,10 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
                             option.maxUsers = 200;
                             option.style = EMGroupStyle.EMGroupStylePublicOpenJoin;
                             EMGroup emGroup=    EMClient.getInstance().groupManager().createGroup("111", "这是群聊", new String[]{}, "申请加群：", option);
-                            if (emGroup!=null){
-                                groupId =     emGroup.getGroupId();
-
-                            }
-                            Log.e(TAG, "创建群聊==id: ="+groupId);
+                            Message message = handler.obtainMessage();
+                            message.obj = emGroup;
+                            message.what = CREATE_GROUP;
+                            handler.sendMessage(message);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -114,13 +129,13 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
                 }.start();
 
                 break;
-            case R.id.join_group:
-//如果群开群是自由加入的，即group.isMembersOnly()为false，直接join
+            case R.id.join_group:  //加入群聊
                 new Thread(){
                     public  void run(){
                         try {
                             EMClient.getInstance().groupManager().joinGroup("68364305235969");//需异步处理
-                            Log.e(TAG, "joinGroup: " );
+
+                            handler.sendEmptyMessage(JOIN_GROUP);
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.e(TAG, "joinGroup: failed" );
@@ -128,8 +143,6 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
 
                     }}.start();
 
-////需要申请和验证才能加入的，即group.isMembersOnly()为true，调用下面方法
-//                EMClient.getInstance().groupManager().applyJoinToGroup(groupid, "求加入");//需异步处理
                 break;
         }
     }

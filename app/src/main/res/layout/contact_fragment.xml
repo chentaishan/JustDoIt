@@ -20,6 +20,7 @@
             android:src="@drawable/ease_group_icon" />
 
         <TextView
+            android:id="@+id/create_group_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

@@ -7,4 +7,9 @@ public class Contants {
     public static final int ITEM_CAMERA=3;
     public static final int ITEM_PICTURE=4;
 
+    public static final int CREATE_GROUP=5;
+    public static final int JOIN_GROUP=6;
+
+    public static final int REQUEST_CODE_CAMERA=11;
+
 }
