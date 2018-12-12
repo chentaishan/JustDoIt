@@ -16,6 +16,12 @@ import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 
+import static baway.com.justdoit.Utils.Contants.ITEM_CAMERA;
+import static baway.com.justdoit.Utils.Contants.ITEM_FILE;
+import static baway.com.justdoit.Utils.Contants.ITEM_LOCATION;
+import static baway.com.justdoit.Utils.Contants.ITEM_PICTURE;
+import static baway.com.justdoit.Utils.Contants.ITEM_SHAKE;
+
 /**
  * 聊天页面
  */
@@ -25,9 +31,6 @@ public class ConversationActivity extends Activity {
     String userName;
     private EaseChatInputMenu inputMenu;
     private EaseVoiceRecorderView voiceRecorderView;
-    private int ITEM_LOCATION=0;
-    private int ITEM_SHAKE=1;
-    private int ITEM_FILE=2;
 
     private int chatType=0;
     private String userId;
@@ -48,7 +51,10 @@ public class ConversationActivity extends Activity {
 
         //注册底部菜单扩展栏item
         //传入item对应的文字，图片及点击事件监听，extendMenuItemClickListener实现EaseChatExtendMenuItemClickListener
+        inputMenu.registerExtendMenuItem(R.string.attach_take_pic, R.drawable.ease_chat_takepic_selector, ITEM_CAMERA, easeChatExtendMenuItemClickListener);
+        inputMenu.registerExtendMenuItem(R.string.attach_picture, R.drawable.ease_chat_image_selector, ITEM_PICTURE, easeChatExtendMenuItemClickListener);
         inputMenu.registerExtendMenuItem(R.string.attach_file, R.drawable.em_chat_file_selector, ITEM_FILE, easeChatExtendMenuItemClickListener);
+
         inputMenu.registerExtendMenuItem(R.string.attach_location, R.drawable.ease_location_msg, ITEM_LOCATION, easeChatExtendMenuItemClickListener);
         inputMenu.registerExtendMenuItem("抖一抖", R.drawable.shake_icon, ITEM_SHAKE, easeChatExtendMenuItemClickListener);
         //初始化，此操作需放在registerExtendMenuItem后
