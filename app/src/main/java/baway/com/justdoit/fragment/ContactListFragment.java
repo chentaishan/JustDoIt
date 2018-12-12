@@ -15,6 +15,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupManager.EMGroupStyle;
 import java.security.acl.Group;
+import java.util.List;
 
 import baway.com.justdoit.GroupAdapter;
 import baway.com.justdoit.R;
@@ -26,7 +27,7 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
     ListView listView;
     private String groupId;
     private String TAG="ContactListFragment";
-    protected List<EMGroup> grouplist;
+//    protected List<EMGroup> grouplist;
     private ListView groupListView;
     @Nullable
     @Override
@@ -41,10 +42,10 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
         creteGroup.setOnClickListener(this);
         joinGroup.setOnClickListener(this);
 
-        grouplist = EMClient.getInstance().groupManager().getAllGroups();
-        groupListView = (ListView) findViewById(R.id.list);
+        List<EMGroup> grouplist = EMClient.getInstance().groupManager().getAllGroups();
+        groupListView = (ListView) rootView.findViewById(R.id.list);
         //show group list
-        GroupAdapter groupAdapter = new GroupAdapter(this, 1, grouplist);
+        GroupAdapter groupAdapter = new GroupAdapter(getActivity(), 1, grouplist);
         groupListView.setAdapter(groupAdapter);
 
         return rootView;

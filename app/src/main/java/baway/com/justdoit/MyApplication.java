@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
-import com.hyphenate.easeui.EaseUI;
+//import com.hyphenate.easeui.EaseUI;
 
 
 public class MyApplication extends Application {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,9 +12,7 @@ import android.widget.EditText;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
-import com.hyphenate.easeui.domain.EaseEmojicon;
-import com.hyphenate.easeui.widget.EaseChatExtendMenu;
-import com.hyphenate.easeui.widget.EaseChatInputMenu;
+//import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseConversationList;
 
 import java.util.ArrayList;
@@ -29,7 +26,7 @@ public class ConversationListFragment extends Fragment implements AdapterView.On
 
     private EaseConversationList easeConversationList;
     private List<EMConversation> conversationList = new ArrayList<>();
-    private EaseChatInputMenu inputMenu;
+//    private EaseChatInputMenu inputMenu;
 
     @Nullable
     @Override

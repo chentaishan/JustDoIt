@@ -4,7 +4,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '25.0.3'
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId "com.hyphenate.chatuidemo"
@@ -14,6 +14,9 @@ android {
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86'
         }
+//        jackOptions {
+//            enabled true
+//        }
     }
 
     buildTypes {
@@ -35,24 +38,26 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
     compile project(':easeui')
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(include: '*.jar', dir: 'libs')
     compile 'com.parse:parse-android:1.13.1'
     compile 'com.android.support:multidex:1.0.1'
-
     // Google firebase cloud messaging
     compile 'com.google.firebase:firebase-messaging:11.4.0'
-
     // bugly start
     compile 'com.tencent.bugly:crashreport:2.6.6.1'
     compile 'com.tencent.bugly:nativecrashreport:3.3.1'
     // bugly end
-
     compile project(':hmspush')
-//    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
 // ADD THIS AT THE BOTTOM
