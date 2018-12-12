@@ -1,5 +1,6 @@
 package baway.com.justdoit.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import com.hyphenate.chat.EMGroup;
@@ -14,11 +16,16 @@ import com.hyphenate.chat.EMGroupOptions;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMGroupManager;
 import com.hyphenate.chat.EMGroupManager.EMGroupStyle;
+import com.hyphenate.chat.EMMessage;
+
 import java.security.acl.Group;
 import java.util.List;
 
+import baway.com.justdoit.ConversationActivity;
 import baway.com.justdoit.GroupAdapter;
 import baway.com.justdoit.R;
+
+import static com.hyphenate.easeui.EaseConstant.CHATTYPE_GROUP;
 
 public class ContactListFragment extends Fragment implements View.OnClickListener {
 
@@ -48,6 +55,18 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
         GroupAdapter groupAdapter = new GroupAdapter(getActivity(), 1, grouplist);
         groupListView.setAdapter(groupAdapter);
 
+        groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(getActivity(), ConversationActivity.class);
+                // it is group chat
+                intent.putExtra("chatType", EMMessage.ChatType.GroupChat.ordinal());
+                intent.putExtra("userId", groupAdapter.getItem(position).getGroupId());
+                intent.putExtra("name", groupAdapter.getItem(position).getGroupName());
+                startActivityForResult(intent, 0);
+            }
+        });
         return rootView;
 
     }

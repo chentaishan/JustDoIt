@@ -19,6 +19,12 @@ import baway.com.justdoit.fragment.ContactListFragment;
 import baway.com.justdoit.fragment.ConversationListFragment;
 import baway.com.justdoit.fragment.SettingFragment;
 
+/**
+ * 主页
+ *  包含三个fragment
+ *  ConversationListFragment  会话列表页面
+ *  ContactListFragment    群聊列表页面
+ */
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private ConversationListFragment conversationListFragment;

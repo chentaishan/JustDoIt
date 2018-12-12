@@ -16,6 +16,9 @@ import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 
+/**
+ * 聊天页面
+ */
 
 public class ConversationActivity extends Activity {
     EaseChatMessageList messageList;
@@ -24,6 +27,10 @@ public class ConversationActivity extends Activity {
     private EaseVoiceRecorderView voiceRecorderView;
     private int ITEM_LOCATION=0;
     private int ITEM_SHAKE=1;
+    private int ITEM_FILE=2;
+
+    private int chatType=0;
+    private String userId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +39,8 @@ public class ConversationActivity extends Activity {
         setContentView(R.layout.conversation_activity);
 
         userName = getIntent().getStringExtra("name");
+        chatType = getIntent().getIntExtra("chatType",0);
+        userId = getIntent().getStringExtra("userId");
 
         messageList = (EaseChatMessageList) findViewById(R.id.message_list);
         inputMenu = (EaseChatInputMenu) findViewById(R.id.input_menu);
@@ -39,6 +48,7 @@ public class ConversationActivity extends Activity {
 
         //注册底部菜单扩展栏item
         //传入item对应的文字，图片及点击事件监听，extendMenuItemClickListener实现EaseChatExtendMenuItemClickListener
+        inputMenu.registerExtendMenuItem(R.string.attach_file, R.drawable.em_chat_file_selector, ITEM_FILE, easeChatExtendMenuItemClickListener);
         inputMenu.registerExtendMenuItem(R.string.attach_location, R.drawable.ease_location_msg, ITEM_LOCATION, easeChatExtendMenuItemClickListener);
         inputMenu.registerExtendMenuItem("抖一抖", R.drawable.shake_icon, ITEM_SHAKE, easeChatExtendMenuItemClickListener);
         //初始化，此操作需放在registerExtendMenuItem后
@@ -74,8 +84,16 @@ public class ConversationActivity extends Activity {
                 });
             }
         });
-        //初始化messagelist
-        messageList.init(userName, EMMessage.ChatType.Chat.ordinal(), null);
+//        if (chatType==EMMessage.ChatType.GroupChat.ordinal()){
+//
+//        }else if(chatType==EMMessage.ChatType.Chat.ordinal()){
+//            //初始化messagelist
+//        }
+        if (chatType==EMMessage.ChatType.GroupChat.ordinal()){
+            userName=  userId ;
+        }
+        messageList.init(userName,chatType, null);
+
         //设置item里的控件的点击事件
         messageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
             @Override
@@ -166,6 +184,11 @@ public class ConversationActivity extends Activity {
                 case 1:  //对应ITEM_SHAKE
 
                     sendTextMessage("抖一抖");
+                    break;
+
+                case 2: // 发送文件
+
+
                     break;
             }
         }
