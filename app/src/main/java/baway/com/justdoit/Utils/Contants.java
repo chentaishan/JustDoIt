@@ -13,5 +13,6 @@ public class Contants {
     public static final int REQUEST_CODE_CAMERA=11;
     public static final int REQUEST_CODE_MAP=12;
     public static final int REQUEST_CODE_LOCAL=13;
+    public static final int REQUEST_CODE_SELECT_FILE=14;
 
 }

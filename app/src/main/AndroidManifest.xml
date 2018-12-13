@@ -22,6 +22,7 @@
         <activity android:name=".ConversationActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"/>
+        <activity android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"/>
 
 
 

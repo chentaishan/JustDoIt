@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
@@ -26,6 +28,7 @@ import com.hyphenate.easeui.widget.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
 import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
+import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
 import java.io.File;
@@ -38,6 +41,7 @@ import static baway.com.justdoit.Utils.Contants.ITEM_SHAKE;
 import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_CAMERA;
 import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_LOCAL;
 import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_MAP;
+import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_SELECT_FILE;
 import static com.baidu.mapapi.BMapManager.getContext;
 
 /**
@@ -225,6 +229,9 @@ public class ConversationActivity extends Activity {
                 case ITEM_PICTURE://  图片
                     selectPicFromLocal();
                     break;
+                case ITEM_FILE:
+                    selectFileFromLocal();
+                    break;
             }
         }
     };
@@ -265,6 +272,13 @@ public class ConversationActivity extends Activity {
         }else if(requestCode == REQUEST_CODE_CAMERA){
             if (cameraFile != null && cameraFile.exists())
                 sendPicMessage(cameraFile.getAbsolutePath());
+        }else if(requestCode == REQUEST_CODE_SELECT_FILE){
+            if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    sendFileByUri(uri);
+                }
+            }
         }
 //        startActivityForResult();
 
@@ -340,4 +354,84 @@ public class ConversationActivity extends Activity {
         startActivityForResult(intent, REQUEST_CODE_LOCAL);
     }
 
+    /**
+     * select file
+     */
+    protected void selectFileFromLocal() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+
+        startActivityForResult(intent, REQUEST_CODE_SELECT_FILE);
+    }
+    protected void sendFileByUri(Uri uri){
+        String filePath = EaseCompat.getPath(this, uri);
+//        EMLog.i(TAG, "sendFileByUri: " + filePath);
+        if (filePath == null) {
+            return;
+        }
+        File file = new File(filePath);
+        if (!file.exists()) {
+            Toast.makeText(this, com.hyphenate.easeui.R.string.File_does_not_exist, Toast.LENGTH_SHORT).show();
+            return;
+        }
+//        EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUsername);
+//        sendMessage(message);
+        sendFileMessage(filePath);
+    }
+
+    protected void sendFileMessage(String filePath) {
+        EMMessage message = EMMessage.createFileSendMessage(filePath, userName);
+        sendMessage(message);
+    }
+
+    protected void sendMessage(EMMessage message){
+        if (message == null) {
+            return;
+        }
+//        if(chatFragmentHelper != null){
+//            //set extension
+//            chatFragmentHelper.onSetMessageAttributes(message);
+//        }
+        if (chatType == EaseConstant.CHATTYPE_GROUP){
+            message.setChatType(EMMessage.ChatType.GroupChat);
+        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+            message.setChatType(EMMessage.ChatType.ChatRoom);
+        }
+
+        message.setMessageStatusCallback(messageStatusCallback);
+
+        // Send message.
+        EMClient.getInstance().chatManager().sendMessage(message);
+        //refresh ui
+//        if(isMessageListInited) {
+            messageList.refreshSelectLast();
+//        }
+    }
+
+
+    protected EMCallBack messageStatusCallback = new EMCallBack() {
+        @Override
+        public void onSuccess() {
+//            if(isMessageListInited) {
+                messageList.refresh();
+//            }
+        }
+
+        @Override
+        public void onError(int code, String error) {
+            Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
+//            if(isMessageListInited) {
+                messageList.refresh();
+//            }
+        }
+
+        @Override
+        public void onProgress(int progress, String status) {
+//            Log.i(TAG, "onProgress: " + progress);
+//            if(isMessageListInited) {
+                messageList.refresh();
+//            }
+        }
+    };
 }
