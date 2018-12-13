@@ -190,17 +190,20 @@ public class ConversationActivity extends Activity {
         public void onClick(int itemId, View view) {
 
             switch (itemId) {
-                case 0:  //对应ITEM_LOCATION
+                case ITEM_LOCATION:  //对应ITEM_LOCATION
                     double latitude = 40.0376283850;
                     double longitude = 116.3187221243;
                         sendLocationMessage(latitude, longitude, "北京海淀区 上地七街");
                     break;
-                case 1:  //对应ITEM_SHAKE
+                case ITEM_SHAKE:  //对应ITEM_SHAKE
 
                     sendTextMessage("抖一抖");
+                    // TODO 震动  声音
+                    
+
                     break;
 
-                case 2: // 发送文件
+                case ITEM_CAMERA: // 发送文件
 
 
                     break;

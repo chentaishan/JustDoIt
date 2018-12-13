@@ -64,9 +64,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onMessageReceived(List<EMMessage> messages) {
                 //收到消息
+                // TODO 遍历messages 里是否有抖一抖，如果有，震动，并且刷新聊天页面
+
 
                 Log.e(TAG, "onMessageReceived: " + messages.size());
                 conversationListFragment.refreshLayout();
+
+                conversationListFragment.doShake(messages);
 
             }
 

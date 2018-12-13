@@ -35,6 +35,9 @@ import static baway.com.justdoit.Utils.Contants.CREATE_GROUP;
 import static baway.com.justdoit.Utils.Contants.JOIN_GROUP;
 import static com.hyphenate.easeui.EaseConstant.CHATTYPE_GROUP;
 
+/**
+ * 群聊相关
+ */
 public class ContactListFragment extends Fragment implements View.OnClickListener {
 
     RelativeLayout creteGroup;
@@ -67,6 +70,8 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
             }
         }
     };
+
+
 
     @Nullable
     @Override
@@ -115,7 +120,8 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
                             EMGroupOptions option = new EMGroupOptions();
                             option.maxUsers = 200;
                             option.style = EMGroupStyle.EMGroupStylePublicOpenJoin;
-                            EMGroup emGroup=    EMClient.getInstance().groupManager().createGroup("111", "这是群聊", new String[]{}, "申请加群：", option);
+                            EMGroup emGroup=    EMClient.getInstance().groupManager().createGroup("111", "这是群聊描述信息", new String[]{}, "申请加群：", option);
+
                             Message message = handler.obtainMessage();
                             message.obj = emGroup;
                             message.what = CREATE_GROUP;
@@ -133,7 +139,9 @@ public class ContactListFragment extends Fragment implements View.OnClickListene
                 new Thread(){
                     public  void run(){
                         try {
-                            EMClient.getInstance().groupManager().joinGroup("68364305235969");//需异步处理
+                            String groupId = "68435032735747";
+
+                            EMClient.getInstance().groupManager().joinGroup(groupId);//需异步处理
 
                             handler.sendEmptyMessage(JOIN_GROUP);
                         } catch (Exception e) {

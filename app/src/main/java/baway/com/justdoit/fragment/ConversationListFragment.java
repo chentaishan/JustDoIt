@@ -13,6 +13,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 //import com.hyphenate.easeui.widget.EaseChatInputMenu;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.widget.EaseConversationList;
 
 import java.util.ArrayList;
@@ -88,6 +89,16 @@ public class ConversationListFragment extends Fragment implements AdapterView.On
         }
         easeConversationList.init(conversationList);
 
+    }
+
+    public void doShake(List<EMMessage> messages){
+        for (EMMessage emMessage:messages){
+            if (((EMTextMessageBody)emMessage.getBody()).getMessage().equals("抖一抖")){
+                // TODO 抖一抖
+
+
+            }
+        }
     }
 
 
