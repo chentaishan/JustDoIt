@@ -1,6 +1,8 @@
 package baway.com.justdoit;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,9 +17,13 @@ import com.hyphenate.EMConnectionListener;
 
 import java.util.List;
 
+import baway.com.justdoit.Utils.PermissionHelper;
+import baway.com.justdoit.Utils.PermissionInterface;
 import baway.com.justdoit.fragment.ContactListFragment;
 import baway.com.justdoit.fragment.ConversationListFragment;
 import baway.com.justdoit.fragment.SettingFragment;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 /**
  * 主页
@@ -25,19 +31,26 @@ import baway.com.justdoit.fragment.SettingFragment;
  *  ConversationListFragment  会话列表页面
  *  ContactListFragment    群聊列表页面
  */
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity implements View.OnClickListener,PermissionInterface {
     private static final String TAG = "MainActivity";
     private ConversationListFragment conversationListFragment;
     private ContactListFragment contactListFragment;
     private Fragment[] fragments;
     private int currentTabIndex = 0;
     private int index;
+    private PermissionHelper mPermissionHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_actvity);
+
+        //初始化并发起权限申请
+        mPermissionHelper = new PermissionHelper(this, this);
+        mPermissionHelper.requestPermissions();
+
+
 
         findViewById(R.id.btn_1).setOnClickListener(this);
         findViewById(R.id.btn_2).setOnClickListener(this);
@@ -105,6 +118,35 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
 
     }
+
+    @Override
+    public int getPermissionsRequestCode() {
+        return 10000;
+    }
+
+    @Override
+    public String[] getPermissions() {
+
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.CAMERA,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+
+        return  perms;
+    }
+
+    @Override
+    public void requestPermissionsSuccess() {
+
+    }
+
+    @Override
+    public void requestPermissionsFail() {
+
+    }
+
     //实现ConnectionListener接口
     private class MyConnectionListener implements EMConnectionListener {
         @Override
@@ -154,4 +196,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         changeTab();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(mPermissionHelper.requestPermissionsResult(requestCode, permissions, grantResults)){
+            //权限请求结果，并已经处理了该回调
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 }

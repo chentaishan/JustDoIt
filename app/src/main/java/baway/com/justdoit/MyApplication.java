@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
+import com.hyphenate.easeui.EaseUI;
 //import com.hyphenate.easeui.EaseUI;
 
 
@@ -21,6 +22,7 @@ public class MyApplication extends Application {
         options.setAutoDownloadThumbnail(true);
 //初始化
         EMClient.getInstance().init(this, options);
+        EaseUI.getInstance().init(this,options);
 //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
     }

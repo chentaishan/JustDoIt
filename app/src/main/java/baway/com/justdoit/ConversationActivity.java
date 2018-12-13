@@ -2,9 +2,14 @@ package baway.com.justdoit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -14,6 +19,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.model.EaseCompat;
+import com.hyphenate.easeui.ui.EaseBaiduMapActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
 import com.hyphenate.easeui.widget.EaseChatInputMenu;
@@ -29,6 +35,9 @@ import static baway.com.justdoit.Utils.Contants.ITEM_LOCATION;
 import static baway.com.justdoit.Utils.Contants.ITEM_PICTURE;
 import static baway.com.justdoit.Utils.Contants.ITEM_SHAKE;
 import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_CAMERA;
+import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_LOCAL;
+import static baway.com.justdoit.Utils.Contants.REQUEST_CODE_MAP;
+import static com.baidu.mapapi.BMapManager.getContext;
 
 /**
  * 聊天页面
@@ -40,8 +49,9 @@ public class ConversationActivity extends Activity {
     private EaseChatInputMenu inputMenu;
     private EaseVoiceRecorderView voiceRecorderView;
 
-    private int chatType=0;
+    private int chatType = 0;
     private String userId;
+    private File cameraFile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +60,7 @@ public class ConversationActivity extends Activity {
         setContentView(R.layout.conversation_activity);
 
         userName = getIntent().getStringExtra("name");
-        chatType = getIntent().getIntExtra("chatType",0);
+        chatType = getIntent().getIntExtra("chatType", 0);
         userId = getIntent().getStringExtra("userId");
 
         messageList = (EaseChatMessageList) findViewById(R.id.message_list);
@@ -103,10 +113,10 @@ public class ConversationActivity extends Activity {
 //        }else if(chatType==EMMessage.ChatType.Chat.ordinal()){
 //            //初始化messagelist
 //        }
-        if (chatType==EMMessage.ChatType.GroupChat.ordinal()){
-            userName=  userId ;
+        if (chatType == EMMessage.ChatType.GroupChat.ordinal()) {
+            userName = userId;
         }
-        messageList.init(userName,chatType, null);
+        messageList.init(userName, chatType, null);
 
         //设置item里的控件的点击事件
         messageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
@@ -162,9 +172,9 @@ public class ConversationActivity extends Activity {
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
-    private void sendPicMessage(String imagePath){
+    private void sendPicMessage(String imagePath) {
         //imagePath为图片本地路径，false为不发送原图（默认超过100k的图片会压缩后发给对方），需要发送原图传true
-        EMMessage  emMessage = EMMessage.createImageSendMessage(imagePath, false, userName);
+        EMMessage emMessage = EMMessage.createImageSendMessage(imagePath, false, userName);
 
         EMClient.getInstance().chatManager().sendMessage(emMessage);
     }
@@ -191,26 +201,34 @@ public class ConversationActivity extends Activity {
 
             switch (itemId) {
                 case ITEM_LOCATION:  //对应ITEM_LOCATION
-                    double latitude = 40.0376283850;
-                    double longitude = 116.3187221243;
-                        sendLocationMessage(latitude, longitude, "北京海淀区 上地七街");
+//                    double latitude = 40.0376283850;
+//                    double longitude = 116.3187221243;
+//                    sendLocationMessage(latitude, longitude, "北京海淀区 上地七街");
+
+                    startActivityForResult(new Intent(ConversationActivity.this,
+                            EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+
                     break;
                 case ITEM_SHAKE:  //对应ITEM_SHAKE
 
                     sendTextMessage("抖一抖");
                     // TODO 震动  声音
-                    
+
 
                     break;
 
-                case ITEM_CAMERA: // 发送文件
+                case ITEM_CAMERA: //  相机
+                    selectPicFromCamera();
 
-
+                    break;
+                case ITEM_FILE://  图片
+                    selectPicFromLocal();
                     break;
             }
         }
     };
-    public void sendLocationMessage(double latitude,double longitude,String locationAddress){
+
+    public void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         //latitude为纬度，longitude为经度，locationAddress为具体位置内容
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, userName);
         message.setMessageStatusCallback(emCallBack);
@@ -221,16 +239,32 @@ public class ConversationActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // 点击选择图片，会跳转一个图片选择器的界面，选中图片后，会跳转回来，并且返回图片路径。
+        if (requestCode == REQUEST_CODE_MAP) { // location
+            double latitude = data.getDoubleExtra("latitude", 0);
+            double longitude = data.getDoubleExtra("longitude", 0);
+            String locationAddress = data.getStringExtra("address");
+            if (locationAddress != null && !locationAddress.equals("")) {
+                sendLocationMessage(latitude, longitude, locationAddress);
+            } else {
+                Toast.makeText(this, "位置有误", Toast.LENGTH_SHORT).show();
+            }
 
-        String imgPath = data.getStringExtra("imgPath");
-        //sdcard/nom/
-        if (imgPath!=null){
-            sendPicMessage(imgPath);
+        } else if (requestCode == REQUEST_CODE_LOCAL){
+
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                if (selectedImage != null) {
+                    sendPicByUri(selectedImage);
+                }
+            }
+        }else if(requestCode == REQUEST_CODE_CAMERA){
+            if (cameraFile != null && cameraFile.exists())
+                sendPicMessage(cameraFile.getAbsolutePath());
         }
 //        startActivityForResult();
 
     }
+
     /**
      * capture new image
      */
@@ -240,13 +274,65 @@ public class ConversationActivity extends Activity {
             return;
         }
 
-       File cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
+        File cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
+        Uri photoUri = EaseCompat.getUriForFile(getContext(), cameraFile);
+
         startActivityForResult(
-                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(this, cameraFile)),
+                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT,
+                        photoUri),
                 REQUEST_CODE_CAMERA);
+    }
+    /**
+     * send image
+     *
+     * @param selectedImage
+     */
+    protected void sendPicByUri(Uri selectedImage) {
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        Cursor cursor = this.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+            cursor = null;
+
+            if (picturePath == null || picturePath.equals("null")) {
+                Toast toast = Toast.makeText(this, com.hyphenate.easeui.R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                return;
+            }
+            sendPicMessage(picturePath);
+        } else {
+            File file = new File(selectedImage.getPath());
+            if (!file.exists()) {
+                Toast toast = Toast.makeText(this, com.hyphenate.easeui.R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                return;
+
+            }
+            sendPicMessage(file.getAbsolutePath());
+        }
+
+    }
+    /**
+     * select local image
+     */
+    protected void selectPicFromLocal() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+
+        } else {
+            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        }
+        startActivityForResult(intent, REQUEST_CODE_LOCAL);
     }
 
 }

@@ -4,10 +4,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "com.hyphenate.chatuidemo"
+        applicationId "baway.com.justdoit"
         minSdkVersion 16
         targetSdkVersion 26
         multiDexEnabled true
@@ -57,6 +57,7 @@ dependencies {
     compile 'com.tencent.bugly:nativecrashreport:3.3.1'
     // bugly end
     compile project(':hmspush')
+//    compile 'pub.devrel:easypermissions:2.0.0'
     //    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
