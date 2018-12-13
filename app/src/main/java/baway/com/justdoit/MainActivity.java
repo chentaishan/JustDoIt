@@ -129,7 +129,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.CAMERA,
+                android.Manifest.permission.CAMERA,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE
         };

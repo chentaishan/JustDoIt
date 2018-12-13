@@ -2,6 +2,7 @@ package baway.com.justdoit;
 
 import android.app.Application;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.EaseUI;
@@ -25,5 +26,8 @@ public class MyApplication extends Application {
         EaseUI.getInstance().init(this,options);
 //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
+
+        SDKInitializer.initialize(getApplicationContext());
+
     }
 }

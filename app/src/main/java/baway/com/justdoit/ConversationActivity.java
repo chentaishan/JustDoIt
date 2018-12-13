@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
@@ -58,6 +59,7 @@ public class ConversationActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.conversation_activity);
+
 
         userName = getIntent().getStringExtra("name");
         chatType = getIntent().getIntExtra("chatType", 0);
@@ -214,14 +216,13 @@ public class ConversationActivity extends Activity {
                     sendTextMessage("抖一抖");
                     // TODO 震动  声音
 
-
                     break;
 
                 case ITEM_CAMERA: //  相机
                     selectPicFromCamera();
 
                     break;
-                case ITEM_FILE://  图片
+                case ITEM_PICTURE://  图片
                     selectPicFromLocal();
                     break;
             }
@@ -240,6 +241,10 @@ public class ConversationActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_MAP) { // location
+             if (data==null){
+                 return;
+             }
+
             double latitude = data.getDoubleExtra("latitude", 0);
             double longitude = data.getDoubleExtra("longitude", 0);
             String locationAddress = data.getStringExtra("address");
@@ -274,7 +279,7 @@ public class ConversationActivity extends Activity {
             return;
         }
 
-        File cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
+         cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
